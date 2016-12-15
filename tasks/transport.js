@@ -22,7 +22,10 @@ module.exports = function(grunt) {
       paths: ['sea-modules'],
 
       idleading: '',
-      alias: {},
+      alias: {
+        // importstyle: 'pandora/importstyle/1.0.0/importstyle',
+        // handlebars: 'gallery/handlebars/1.3.0/handlebars-runtime'
+      },
 
       // create a debug file or not
       debug: true,
@@ -33,18 +36,37 @@ module.exports = function(grunt) {
       // define parsers
       parsers: {
         '.js': [script.jsParser],
-        '.css': [style.cssParser],
+        '.css': [style.css2jsParser],
         '.html': [text.html2jsParser],
         '.json': [json.jsonParser],
         '.tpl': [template.tplParser],
         '.handlebars': [template.handlebarsParser]
       },
 
+      // for styles
+      css: {
+        template: [
+          'define(\'%s\', [\'%s\'], function(require, exports, module) {',
+            'var importStyle = require(\'%s\');',
+            'module.exports = function() {',
+              'importStyle(\'%s\', \'%s\');',
+            '};',
+          '});'
+        ].join('\n')
+      },
+
       // for handlebars
       handlebars: {
-        id: 'gallery/handlebars/1.0.2/runtime',
         knownHelpers: [],
-        knownHelpersOnly: false
+        knownHelpersOnly: false,
+        template: [
+          'define(\'%s\', [\'%s\'], function(require, exports, module) {',
+            'var Handlebars = require(\'%s\');',
+            'module.exports = Handlebars.template(',
+              '%s',
+            ');',
+          '})'
+        ].join('\n')
       },
 
       // output beautifier

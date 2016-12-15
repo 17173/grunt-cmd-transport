@@ -10,6 +10,8 @@
 module.exports = function(grunt) {
 
   var style = require('./').style.init(grunt);
+  var cssParser = style.cssParser;
+  // now as default
   var css2jsParser = style.css2jsParser;
   var jsParser = require('./').script.init(grunt).jsParser;
 
@@ -125,6 +127,9 @@ module.exports = function(grunt) {
         options: {
           alias: {
             'button': 'alice/button/1.0.0/button.css'
+          },
+          parsers: {
+            '.css': [cssParser]
           }
         },
         files: [{
@@ -147,6 +152,11 @@ module.exports = function(grunt) {
 
       // parsing handlebars into js
       handlebars: {
+        options: {
+          alias: {
+            'handlebars': 'gallery/handlebars/1.3.0/handlebars-runtime'
+          }
+        },
         files: [{
           expand: true,
           cwd: 'test/cases/handlebars',
@@ -167,6 +177,9 @@ module.exports = function(grunt) {
 
       css2js: {
         options: {
+          alias: {
+            'importstyle': 'pandora/importstyle/1.0.0/importstyle'
+          },
           parsers: {
             '.css': [css2jsParser]
           }
@@ -181,11 +194,14 @@ module.exports = function(grunt) {
 
       style: {
         options: {
+          alias: {
+            'importstyle': 'pandora/importstyle/1.0.0/importstyle'
+          },
           parsers: {
             '.css': [css2jsParser],
             '.js': [jsParser]
           },
-          styleBox: ["a.css"],
+          styleBox: ['a.css'],
           idleading: 'arale/widget/1.0.0/'
         },
         files: [{

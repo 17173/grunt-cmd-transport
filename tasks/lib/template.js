@@ -47,24 +47,14 @@ exports.init = function(grunt) {
     var id = unixy(options.idleading + fileObj.name.replace(/\.js$/, ''));
 
     // handlebars alias
-    var alias = options.handlebars.id;
-
-    var template = [
-      'define("%s", ["%s"], function(require, exports, module) {',
-      'var Handlebars = require("%s");',
-      'var template = Handlebars.template;',
-      'module.exports = template(',
-      '%s',
-      ');',
-      '})'
-    ].join('\n');
+    var alias = options.alias.handlebars || options.handlebars.id;
 
     var data = fileObj.srcData || grunt.file.read(fileObj.src);
 
     patchHandlebars(handlebars);
     var code = handlebars.precompile(data, options.handlebars);
 
-    var ret = format(template, id, alias, alias, code);
+    var ret = format(options.handlebars.template, id, alias, alias, code);
     var astCache = ast.getAst(ret);
 
     data = astCache.print_to_string(options.uglify);

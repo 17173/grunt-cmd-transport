@@ -19,7 +19,10 @@ exports.init = function(grunt) {
     var data = fileObj.srcData || grunt.file.read(fileObj.src);
     var id = unixy(options.idleading + fileObj.name.replace(/\.js$/, ''));
 
-    data = css2js(data, id, options, fileObj);
+    // importstyle alias
+    var alias = options.alias.importstyle || options.importstyle.id;
+
+    data = css2js(data, id, alias, options, fileObj);
     data = ast.getAst(data).print_to_string(options.uglify);
     var dest = fileObj.dest + '.js';
     grunt.file.write(dest, data);
@@ -124,7 +127,7 @@ function parseRules(rules, prefix) {
   });
 }
 
-function css2js(code, id, options, fileObj) {
+function css2js(code, id, alias, options, fileObj) {
   // ex. arale/widget/1.0.0/ => arale-widget-1_0_0
   var styleId = unixy((options || {}).idleading || '')
     .replace(/\/$/, '')
@@ -158,20 +161,12 @@ function css2js(code, id, options, fileObj) {
     removeEmpty: true
   });
 
-  // transform css to js
-  // spmjs/spm#581
-  var tpl = [
-    'define("%s", [], function() {',
-    "seajs.importStyle('%s')",
-    '});'
-  ].join('\n');
-
   // spmjs/spm#651
   code = code.split(/\r\n|\r|\n/).map(function(line) {
     return line.replace(/\\/g, '\\\\');
   }).join('\n');
 
-  code = format(tpl, id, code.replace(/\'/g, '\\\''));
+  code = format(options.css.template, id, alias, alias, code.replace(/\'/g, '\\\''), id);
   return code;
 }
 
